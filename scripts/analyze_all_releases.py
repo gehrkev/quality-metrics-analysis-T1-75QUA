@@ -55,8 +55,24 @@ def clone_or_update_repo(repo_url, project_dir):
 def checkout_release(project_dir, tag_name):
     """Faz checkout de uma release específica."""
     print(f"  → Checkout {tag_name}")
-    run_command(f"git checkout {tag_name}", cwd=project_dir)
-    run_command("git clean -fdx", cwd=project_dir)  # Limpar arquivos não rastreados
+    # Limpar completamente o working tree (duas vezes para garantir)
+    run_command("git clean -fdx", cwd=project_dir)
+    run_command("git clean -fdx", cwd=project_dir)  # Segunda vez para arquivos problemáticos
+    run_command("git reset --hard HEAD", cwd=project_dir)
+    # Fazer checkout com force
+    returncode, stdout, stderr = run_command(f"git checkout -f {tag_name}", cwd=project_dir, capture_output=True)
+    if returncode != 0:
+        # Se ainda falhou, pode ser problema de case-sensitivity (macOS)
+        # Remover arquivos manualmente e tentar novamente
+        print(f"    ℹ Limpando arquivos problemáticos...")
+        run_command("find . -name '*.java' -type f ! -path './.git/*' -delete", cwd=project_dir)
+        returncode, stdout, stderr = run_command(f"git checkout -f {tag_name}", cwd=project_dir, capture_output=True)
+        if returncode != 0:
+            print(f"    ⚠ ERRO no checkout: {stderr}")
+            return False
+    # Limpar novamente após checkout para remover qualquer artefato
+    run_command("git clean -fdx", cwd=project_dir)
+    return True
 
 def build_project(project_dir):
     """Compila o projeto (Maven ou Gradle)."""
@@ -202,7 +218,17 @@ def analyze_release(project_dir, release, results_base_dir):
         json.dump(release, f, indent=2)
 
     # Checkout da release
-    checkout_release(project_dir, tag_name)
+    checkout_success = checkout_release(project_dir, tag_name)
+    if not checkout_success:
+        print(f"    ⚠ Pulando análise (checkout falhou)")
+        return {
+            'tag_name': tag_name,
+            'date': date,
+            'ck': False,
+            'pmd': False,
+            'spotbugs': False,
+            'error': 'Checkout failed'
+        }
 
     # Compilar projeto
     build_success = build_project(project_dir)
