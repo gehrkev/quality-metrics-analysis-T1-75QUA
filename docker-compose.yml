@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  qualidade-software:
+    build: .
+    container_name: 75qua-ambiente
+    volumes:
+      # Monta o diretório atual no container
+      - ./workspace:/workspace
+      # Compartilha cache do Maven para acelerar builds
+      - maven-cache:/root/.m2
+      # Compartilha cache do Gradle
+      - gradle-cache:/root/.gradle
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      - JAVA_OPTS=-Xmx4g
+      - TZ=America/Sao_Paulo
+    # Comando padrão: shell interativo
+    command: /bin/bash
+
+  # Serviço opcional para Jupyter Notebook (análise de dados)
+  jupyter:
+    build: .
+    container_name: 75qua-jupyter
+    volumes:
+      - ./workspace:/workspace
+    working_dir: /workspace
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+
+volumes:
+  maven-cache:
+  gradle-cache:
