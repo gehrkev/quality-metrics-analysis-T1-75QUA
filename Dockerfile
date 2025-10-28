@@ -4,6 +4,10 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo
 
+# Configurar mirrors mais rápidos (usar mirror brasileiro)
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://br.archive.ubuntu.com/ubuntu/|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.ubuntu.com/ubuntu/|http://br.archive.ubuntu.com/ubuntu/|g' /etc/apt/sources.list
+
 # Instalação de dependências básicas
 RUN apt-get update && apt-get install -y \
     openjdk-11-jdk \
@@ -36,7 +40,8 @@ RUN pip3 install --no-cache-dir \
     matplotlib \
     seaborn \
     numpy \
-    jupyter
+    jupyter \
+    requests
 
 # Baixar CK metrics tool pré-compilado do Maven Central (versão 0.7.0)
 RUN mkdir -p /tools/ck && \
@@ -61,21 +66,15 @@ RUN mkdir -p /tools/spotbugs && \
     mv /tools/spotbugs-4.8.6 /tools/spotbugs && \
     rm /tmp/spotbugs.tgz
 
-# Instalar find-sec-bugs plugin para SpotBugs (com retry)
+# Instalar find-sec-bugs plugin para SpotBugs do Maven Central
 RUN mkdir -p /tools/spotbugs/plugin && \
-    (wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 3 \
-    -O /tools/spotbugs/plugin/findsecbugs-plugin.jar \
-    https://github.com/find-sec-bugs/find-sec-bugs/releases/download/version-1.13.0/findsecbugs-plugin-1.13.0.jar || \
-    curl -L -o /tools/spotbugs/plugin/findsecbugs-plugin.jar \
-    https://github.com/find-sec-bugs/find-sec-bugs/releases/download/version-1.13.0/findsecbugs-plugin-1.13.0.jar)
+    wget -O /tools/spotbugs/plugin/findsecbugs-plugin.jar \
+    https://repo.maven.apache.org/maven2/com/h3xstream/findsecbugs/findsecbugs-plugin/1.13.0/findsecbugs-plugin-1.13.0.jar
 
-# Instalar RefactoringMiner (com retry)
+# Instalar RefactoringMiner do Maven Central (versão 3.0.9 - all.jar inclui todas as dependências)
 RUN mkdir -p /tools/refactoring-miner && \
-    (wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 3 \
-    -O /tools/refactoring-miner/RefactoringMiner.jar \
-    https://github.com/tsantalis/RefactoringMiner/releases/download/3.0.9/RefactoringMiner-3.0.9.jar || \
-    curl -L -o /tools/refactoring-miner/RefactoringMiner.jar \
-    https://github.com/tsantalis/RefactoringMiner/releases/download/3.0.9/RefactoringMiner-3.0.9.jar)
+    wget -O /tools/refactoring-miner/RefactoringMiner.jar \
+    https://repo.maven.apache.org/maven2/com/github/tsantalis/refactoring-miner/3.0.9/refactoring-miner-3.0.9-all.jar
 
 # Adicionar ferramentas ao PATH
 ENV PATH="/tools/pmd/bin:/tools/spotbugs/bin:${PATH}"
@@ -93,30 +92,44 @@ echo ""\n\
 echo "Java version:"\n\
 echo "  - Java 11: $(java -version 2>&1 | head -n1)"\n\
 echo ""\n\
-echo "1. CK Metrics:"\n\
+echo "1. Buscar GitHub Releases:"\n\
+echo "   fetch-github-releases <owner/repo> [--min-releases N] [--output formato]"\n\
+echo "   Formatos: text, json, csv, tags"\n\
+echo "   Exemplo: fetch-github-releases jhy/jsoup --output json"\n\
+echo ""\n\
+echo "2. CK Metrics:"\n\
 echo "   ck <project-path> <output-path>"\n\
 echo "   Extrai: WMC, DIT, NOC, CBO, LCOM, RFC, LOC"\n\
 echo ""\n\
-echo "2. PMD (análise estática):"\n\
+echo "3. PMD (análise estática):"\n\
 echo "   pmd check -d <source-dir> -R rulesets/java/quickstart.xml -f text"\n\
 echo ""\n\
-echo "3. SpotBugs (detecção de bugs + segurança):"\n\
+echo "4. SpotBugs (detecção de bugs + segurança):"\n\
 echo "   spotbugs -textui -effort:max -pluginList /tools/spotbugs/plugin/findsecbugs-plugin.jar <jar-or-class-files>"\n\
 echo ""\n\
-echo "4. RefactoringMiner:"\n\
+echo "5. RefactoringMiner:"\n\
 echo "   java -jar /tools/refactoring-miner/RefactoringMiner.jar -a <repo-url> <branch>"\n\
 echo ""\n\
-echo "5. PyDriller (Python - análise de repositórios):"\n\
+echo "6. PyDriller (Python - análise de repositórios):"\n\
 echo "   python3 -c \"from pydriller import Repository\""\n\
 echo ""\n\
 echo "Para mais informações, consulte o README.md"\n\
 ' > /usr/local/bin/show-tools && chmod +x /usr/local/bin/show-tools
 
-# Criar diretório para resultados
-RUN mkdir -p /workspace/results
+# Criar estrutura de diretórios organizada (projects, results, scripts)
+RUN mkdir -p /workspace/projects /workspace/results /workspace/scripts
+
+# Copiar scripts auxiliares
+COPY scripts/fetch_github_releases.py /usr/local/bin/fetch-github-releases
+COPY scripts/analyze_all_releases.py /usr/local/bin/analyze-all-releases
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/fetch-github-releases /usr/local/bin/analyze-all-releases /usr/local/bin/entrypoint.sh
 
 # Configurar volume padrão
 VOLUME ["/workspace"]
+
+# Configurar entrypoint para organizar workspace automaticamente
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Comando padrão
 CMD ["/bin/bash"]
