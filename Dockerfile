@@ -123,7 +123,11 @@ RUN mkdir -p /workspace/projects /workspace/results /workspace/scripts
 COPY scripts/fetch_github_releases.py /usr/local/bin/fetch-github-releases
 COPY scripts/analyze_all_releases.py /usr/local/bin/analyze-all-releases
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/fetch-github-releases /usr/local/bin/analyze-all-releases /usr/local/bin/entrypoint.sh
+# Normaliza finais de linha (CRLF -> LF) para compatibilidade Linux
+RUN sed -i 's/\r$//' /usr/local/bin/fetch-github-releases \ 
+    && sed -i 's/\r$//' /usr/local/bin/analyze-all-releases \ 
+    && sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \ 
+    && chmod +x /usr/local/bin/fetch-github-releases /usr/local/bin/analyze-all-releases /usr/local/bin/entrypoint.sh
 
 # Configurar volume padrão
 VOLUME ["/workspace"]

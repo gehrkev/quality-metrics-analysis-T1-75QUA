@@ -1,4 +1,9 @@
-# Workspace - projetos clonados (muito grandes)
+# Workspace (novos nomes em inglês)
+workspace/projects/
+workspace/results/
+workspace/scripts/.ipynb_checkpoints/
+
+# Workspace - projetos clonados (legado, nomes em pt)
 workspace/projetos/*/
 
 # Manter estrutura de diretórios
@@ -10,6 +15,9 @@ workspace/projetos/*/
 workspace/resultados/*.jar
 workspace/resultados/*.class
 workspace/resultados/**/*.jar
+
+# Jupyter
+**/.ipynb_checkpoints/
 
 # Cache e dependências
 .m2/

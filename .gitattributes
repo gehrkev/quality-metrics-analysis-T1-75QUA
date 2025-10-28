@@ -1,0 +1,12 @@
+# Normalize line endings to LF for scripts and configs
+* text=auto
+
+# Shell and Python scripts must be LF to avoid \r issues in Linux
+*.sh text eol=lf
+*.py text eol=lf
+
+# Common config files
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Makefile text eol=lf

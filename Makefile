@@ -55,28 +55,20 @@ status: ## Mostra status dos containers
 
 # Comandos de análise
 analyze: ## Analisa um projeto GitHub (uso: make analyze REPO=owner/repo)
-	@if [ -z "$(REPO)" ]; then \
-		echo "${GREEN}Uso: make analyze REPO=owner/repo${NC}"; \
-		echo "Exemplo: make analyze REPO=jhy/jsoup"; \
-		exit 1; \
-	fi
+	@$(if $(REPO),,$(error Uso: make analyze REPO=owner/repo (ex.: REPO=jhy/jsoup)))
 	@echo "${GREEN}Analisando todas as releases de $(REPO)...${NC}"
+	docker-compose up -d qualidade-software
 	docker-compose exec qualidade-software analyze-all-releases $(REPO)
 
 analyze-limit: ## Analisa com limite (uso: make analyze-limit REPO=owner/repo LIMIT=5)
-	@if [ -z "$(REPO)" ] || [ -z "$(LIMIT)" ]; then \
-		echo "${GREEN}Uso: make analyze-limit REPO=owner/repo LIMIT=N${NC}"; \
-		echo "Exemplo: make analyze-limit REPO=jhy/jsoup LIMIT=5"; \
-		exit 1; \
-	fi
+	@$(if $(and $(REPO),$(LIMIT)),,$(error Uso: make analyze-limit REPO=owner/repo LIMIT=N (ex.: REPO=jhy/jsoup LIMIT=5)))
 	@echo "${GREEN}Analisando $(LIMIT) releases de $(REPO)...${NC}"
+	docker-compose up -d qualidade-software
 	docker-compose exec qualidade-software analyze-all-releases $(REPO) --limit $(LIMIT)
 
 list-releases: ## Lista releases de um projeto (uso: make list-releases REPO=owner/repo)
-	@if [ -z "$(REPO)" ]; then \
-		echo "${GREEN}Uso: make list-releases REPO=owner/repo${NC}"; \
-		exit 1; \
-	fi
+	@$(if $(REPO),,$(error Uso: make list-releases REPO=owner/repo))
+	docker-compose up -d qualidade-software
 	docker-compose exec qualidade-software fetch-github-releases $(REPO)
 
 results: ## Mostra o diretório de resultados
