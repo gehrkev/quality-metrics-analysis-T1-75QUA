@@ -179,7 +179,7 @@ def run_spotbugs_analysis(project_dir, output_dir):
     # Limitar a 3 JARs principais para não demorar muito
     jar_list = " ".join(jar_files[:3])
 
-    cmd = f"/tools/spotbugs/spotbugs-4.8.6/bin/spotbugs -textui -effort:max " \
+    cmd = f"/tools/spotbugs/bin/spotbugs -textui -effort:max " \
           f"-pluginList /tools/spotbugs/plugin/findsecbugs-plugin.jar " \
           f"-xml:withMessages -output {spotbugs_output} {jar_list} 2>&1 | tee {spotbugs_log} || true"
 

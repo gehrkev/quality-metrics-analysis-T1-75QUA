@@ -49,21 +49,23 @@ RUN mkdir -p /tools/ck && \
     https://repo1.maven.org/maven2/com/github/mauricioaniche/ck/0.7.0/ck-0.7.0-jar-with-dependencies.jar
 
 # Instalar PMD (com retry)
-RUN mkdir -p /tools/pmd && \
+RUN mkdir -p /tools && \
     (wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 3 \
     -O /tmp/pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.7.0/pmd-dist-7.7.0-bin.zip || \
     curl -L -o /tmp/pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.7.0/pmd-dist-7.7.0-bin.zip) && \
     unzip /tmp/pmd.zip -d /tools/ && \
     mv /tools/pmd-bin-7.7.0 /tools/pmd && \
+    chmod +x /tools/pmd/bin/* && \
     rm /tmp/pmd.zip
 
 # Instalar SpotBugs (com retry)
-RUN mkdir -p /tools/spotbugs && \
+RUN mkdir -p /tools && \
     (wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 3 \
     -O /tmp/spotbugs.tgz https://github.com/spotbugs/spotbugs/releases/download/4.8.6/spotbugs-4.8.6.tgz || \
     curl -L -o /tmp/spotbugs.tgz https://github.com/spotbugs/spotbugs/releases/download/4.8.6/spotbugs-4.8.6.tgz) && \
     tar -xzf /tmp/spotbugs.tgz -C /tools/ && \
     mv /tools/spotbugs-4.8.6 /tools/spotbugs && \
+    chmod +x /tools/spotbugs/bin/* && \
     rm /tmp/spotbugs.tgz
 
 # Instalar find-sec-bugs plugin para SpotBugs do Maven Central
