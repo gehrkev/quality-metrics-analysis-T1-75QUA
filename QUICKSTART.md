@@ -64,6 +64,7 @@ workspace/results/jsoup/
 ├── jsoup-1.13.1/
 │   └── ...
 └── refactorings-all.json         # Todas as refatorações
+└── refactoring-miner.log         # Log do RefactoringMiner (stdout/erros)
 ```
 
 Ver resultados:
@@ -136,8 +137,13 @@ spotbugs -textui -effort:max \
   /workspace/projects/jsoup/target/*.jar
 
 # RefactoringMiner
+# Local (repo clonado): usa -json para salvar saída
 java -jar /tools/refactoring-miner/RefactoringMiner.jar \
-  -a /workspace/projects/jsoup /output/refactorings.json
+  -a /workspace/projects/jsoup -json /output/refactorings.json
+
+# Alternativa (força branch):
+/tools/refactoring-miner/refactoring-miner.sh \
+  -b /workspace/projects/jsoup master -json /output/refactorings.json
 ```
 
 ## Comandos Make

@@ -262,17 +262,126 @@ def run_refactoring_miner(project_dir, results_base_dir):
     print(f"{'='*60}\n")
 
     output_file = os.path.join(results_base_dir, "refactorings-all.json")
-    cmd = f"/tools/refactoring-miner/refactoring-miner.sh " \
-          f"-a {project_dir} {output_file} || true"
+    log_file = os.path.join(results_base_dir, "refactoring-miner.log")
 
-    returncode, _, _ = run_command(cmd, capture_output=True)
+    # Detectar branch padrão do repositório para garantir histórico completo
+    default_branch = None
+    try:
+        # '-n' evita contato com o remoto; usa info local
+        ret, out, _ = run_command("git remote show -n origin", cwd=project_dir, capture_output=True)
+        if ret == 0 and out:
+            for line in out.splitlines():
+                if "HEAD branch:" in line:
+                    default_branch = line.split(":", 1)[1].strip()
+                    break
+        # Fallback para branches comuns
+        if not default_branch:
+            for candidate in ["main", "master", "develop"]:
+                ret2, _, _ = run_command(f"git show-ref --verify --quiet refs/heads/{candidate}", cwd=project_dir, capture_output=True)
+                if ret2 == 0:
+                    default_branch = candidate
+                    break
+        if not default_branch:
+            default_branch = "master"
+    except Exception:
+        default_branch = "master"
 
-    if returncode == 0 and os.path.exists(output_file):
-        print(f"✓ RefactoringMiner completado: {output_file}\n")
-        return True
+    # Preparar candidatos de branch e estratégia de fallback
+    candidates = []
+    # 1) Branch padrão detectado
+    if default_branch:
+        candidates.append(("branch", default_branch))
+    # 2) Remoto
+    candidates.append(("branch", f"origin/{default_branch}"))
+    # 3) Sem especificar branch (todos os branches)
+    candidates.append(("all", None))
+
+    # Remover arquivo de saída anterior antes de começar
+    if os.path.exists(output_file):
+        try:
+            os.remove(output_file)
+        except OSError:
+            pass
+
+    stdout_all = []
+    stderr_all = []
+    success = False
+    commits_found = 0
+    returncode = 1
+
+    for mode, value in candidates:
+        if mode == "branch":
+            cmd_args = [
+                "/tools/refactoring-miner/refactoring-miner.sh",
+                "-a",
+                project_dir,
+                value,
+                "-json",
+                output_file,
+            ]
+        else:  # "all": não especifica branch
+            cmd_args = [
+                "/tools/refactoring-miner/refactoring-miner.sh",
+                "-a",
+                project_dir,
+                "-json",
+                output_file,
+            ]
+
+        try:
+            result = subprocess.run(cmd_args, capture_output=True, text=True)
+            returncode = result.returncode
+            stdout = result.stdout or ""
+            stderr = result.stderr or ""
+        except Exception as e:
+            returncode = 1
+            stdout = ""
+            stderr = f"Erro ao executar RefactoringMiner ({mode}): {e}"
+
+        stdout_all.append(stdout)
+        stderr_all.append(stderr)
+
+        # Verificar se JSON foi criado e contém commits
+        if os.path.exists(output_file) and os.path.getsize(output_file) > 2:
+            try:
+                with open(output_file, "r") as jf:
+                    data = json.load(jf)
+                    commits_found = len(data.get("commits", []))
+            except Exception:
+                commits_found = 0
+
+            if commits_found > 0:
+                success = True
+                break
+            else:
+                # Remover arquivo vazio antes da próxima tentativa
+                try:
+                    os.remove(output_file)
+                except OSError:
+                    pass
+
+    # Unificar stdout/stderr para log
+    stdout = "\n\n".join([s for s in stdout_all if s])
+    stderr = "\n\n".join([s for s in stderr_all if s])
+
+    # Salvar log sempre
+    try:
+        with open(log_file, 'w') as lf:
+            if stdout:
+                lf.write(stdout)
+            if stderr:
+                lf.write("\n" + stderr)
+    except Exception as e:
+        print(f"⚠ Não foi possível salvar log do RefactoringMiner: {e}")
+
+    if success:
+        print(f"✓ RefactoringMiner completado: {output_file}")
+        print(f"  Commits analisados: {commits_found}")
     else:
-        print(f"⚠ RefactoringMiner falhou ou não gerou saída\n")
-        return False
+        print(f"⚠ RefactoringMiner falhou ou não gerou saída")
+
+    print(f"  Log: {log_file}\n")
+    return success
 
 def generate_summary_report(results_base_dir, all_results):
     """Gera relatório resumido de todas as análises."""

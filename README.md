@@ -67,6 +67,10 @@ Cada release gera:
 
 Relatório geral: `workspace/results/<projeto>/analysis-summary.txt`
 
+RefactoringMiner (repositório completo):
+- `workspace/results/<projeto>/refactorings-all.json` – refatorações detectadas
+- `workspace/results/<projeto>/refactoring-miner.log` – log (stdout/erros)
+
 ## 📁 Estrutura de Diretórios
 
 ```
@@ -177,10 +181,16 @@ spotbugs -textui -effort:max \
   /workspace/projects/jsoup/target/*.jar
 ```
 
-**RefactoringMiner:**
+**RefactoringMiner (local, com JSON):**
 ```bash
 java -jar /tools/refactoring-miner/RefactoringMiner.jar \
-  -a /workspace/projects/jsoup /workspace/results/refactorings.json
+  -a /workspace/projects/jsoup -json /workspace/results/refactorings.json
+```
+
+**RefactoringMiner (forçando branch via wrapper Java 17):**
+```bash
+/tools/refactoring-miner/refactoring-miner.sh \
+  -b /workspace/projects/jsoup master -json /workspace/results/refactorings.json
 ```
 
 **Ver ferramentas disponíveis:**
