@@ -11,6 +11,7 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://br.archive.ubuntu.com/ubu
 # Instalação de dependências básicas
 RUN apt-get update && apt-get install -y \
     openjdk-11-jdk \
+    openjdk-17-jdk \
     maven \
     gradle \
     git \
@@ -77,6 +78,13 @@ RUN mkdir -p /tools/spotbugs/plugin && \
 RUN mkdir -p /tools/refactoring-miner && \
     wget -O /tools/refactoring-miner/RefactoringMiner.jar \
     https://repo.maven.apache.org/maven2/com/github/tsantalis/refactoring-miner/3.0.9/refactoring-miner-3.0.9-all.jar
+
+# Criar wrapper para RefactoringMiner (usa Java 17)
+RUN JAVA_ARCH=$(dpkg --print-architecture) && \
+    echo '#!/bin/bash' > /tools/refactoring-miner/refactoring-miner.sh && \
+    echo "# Wrapper para executar RefactoringMiner com Java 17" >> /tools/refactoring-miner/refactoring-miner.sh && \
+    echo "/usr/lib/jvm/java-17-openjdk-${JAVA_ARCH}/bin/java -jar /tools/refactoring-miner/RefactoringMiner.jar \"\$@\"" >> /tools/refactoring-miner/refactoring-miner.sh && \
+    chmod +x /tools/refactoring-miner/refactoring-miner.sh
 
 # Adicionar ferramentas ao PATH
 ENV PATH="/tools/pmd/bin:/tools/spotbugs/bin:${PATH}"

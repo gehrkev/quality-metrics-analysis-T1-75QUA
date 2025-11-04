@@ -262,7 +262,7 @@ def run_refactoring_miner(project_dir, results_base_dir):
     print(f"{'='*60}\n")
 
     output_file = os.path.join(results_base_dir, "refactorings-all.json")
-    cmd = f"java -jar /tools/refactoring-miner/RefactoringMiner.jar " \
+    cmd = f"/tools/refactoring-miner/refactoring-miner.sh " \
           f"-a {project_dir} {output_file} || true"
 
     returncode, _, _ = run_command(cmd, capture_output=True)
