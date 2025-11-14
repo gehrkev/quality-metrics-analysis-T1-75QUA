@@ -135,7 +135,7 @@ def run_pmd_analysis(project_dir, output_dir):
     pmd_log = os.path.join(output_dir, "pmd.log")
 
     # PMD retorna exit code != 0 quando encontra problemas, por isso o '|| true'
-    cmd = f"/tools/pmd/pmd-bin-7.7.0/bin/pmd check -d {src_dir} -R rulesets/java/quickstart.xml -f csv -r {pmd_output} 2>&1 | tee {pmd_log} || true"
+    cmd = f"/tools/pmd/bin/pmd check -d {src_dir} -R rulesets/java/quickstart.xml -f csv -r {pmd_output} 2>&1 | tee {pmd_log} || true"
 
     returncode, stdout, stderr = run_command(cmd, capture_output=True)
 

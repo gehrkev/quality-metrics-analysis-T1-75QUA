@@ -117,8 +117,8 @@ echo ""\n\
 echo "4. SpotBugs (detecção de bugs + segurança):"\n\
 echo "   spotbugs -textui -effort:max -pluginList /tools/spotbugs/plugin/findsecbugs-plugin.jar <jar-or-class-files>"\n\
 echo ""\n\
-echo "5. RefactoringMiner:"\n\
-echo "   java -jar /tools/refactoring-miner/RefactoringMiner.jar -a <repo-url> <branch>"\n\
+echo "5. RefactoringMiner (Java 17):"\n\
+echo "   /tools/refactoring-miner/refactoring-miner.sh -a <repo-path> <branch> -json <output.json>"\n\
 echo ""\n\
 echo "6. PyDriller (Python - análise de repositórios):"\n\
 echo "   python3 -c \"from pydriller import Repository\""\n\

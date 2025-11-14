@@ -85,8 +85,36 @@ Projetos Java populares com ≥20 releases:
 
 ## Análise de Dados (Python/Jupyter)
 
+### Notebook de Análise Completo (Recomendado)
+
+Um notebook pronto com todas as análises:
+
 ```bash
-# Iniciar Jupyter Notebook
+# Abrir notebook de análise de métricas
+make notebook
+
+# Acesse: http://localhost:8888/notebooks/scripts/analyze_metrics.ipynb
+```
+
+**O notebook inclui:**
+- ✅ Métricas CK (WMC, DIT, NOC, CBO, LCOM, RFC, LOC)
+- ✅ Análise PMD (problemas de código por prioridade)
+- ✅ Bugs (SpotBugs + find-sec-bugs)
+- ✅ Refatorações (RefactoringMiner)
+- ✅ Análises avançadas:
+  - Top 10 arquivos/classes mais refatorados
+  - Categorização de refatorações
+  - Cruzamento com métricas CK
+  - Estatísticas descritivas
+- ✅ Gráficos prontos (evolução, boxplots, heatmaps)
+- ✅ Exportação de CSVs e PNGs
+
+### Análise Manual (Opcional)
+
+Se preferir análise personalizada:
+
+```bash
+# Iniciar Jupyter
 make jupyter
 
 # Acesse http://localhost:8888
@@ -136,14 +164,9 @@ spotbugs -textui -effort:max \
   -xml:withMessages -output /output/spotbugs.xml \
   /workspace/projects/jsoup/target/*.jar
 
-# RefactoringMiner
-# Local (repo clonado): usa -json para salvar saída
-java -jar /tools/refactoring-miner/RefactoringMiner.jar \
-  -a /workspace/projects/jsoup -json /output/refactorings.json
-
-# Alternativa (força branch):
+# RefactoringMiner (usa Java 17 automaticamente)
 /tools/refactoring-miner/refactoring-miner.sh \
-  -b /workspace/projects/jsoup master -json /output/refactorings.json
+  -a /workspace/projects/jsoup main -json /output/refactorings.json
 ```
 
 ## Comandos Make
@@ -164,10 +187,12 @@ make analyze-limit REPO=owner/repo LIMIT=N # Analisa N releases
 make list-releases REPO=owner/repo         # Lista releases
 
 # Extras
-make jupyter           # Jupyter Notebook
+make jupyter           # Jupyter Notebook (servidor geral)
+make notebook          # Abre notebook de análise de métricas
 make test-tools        # Testa ferramentas
 make logs              # Ver logs
 make results           # Mostra diretório de resultados
+make clean-results     # Remove apenas resultados
 ```
 
 ## Workflow Completo
@@ -188,9 +213,9 @@ make analyze REPO=jhy/jsoup
 # 5. Ver resultados
 cat workspace/results/jsoup/analysis-summary.txt
 
-# 6. Análise estatística
-make jupyter
-# Use Python/pandas para processar CSVs
+# 6. Análise estatística (use o notebook pronto)
+make notebook
+# Ou: make jupyter para análise personalizada
 
 # 7. Identificar melhorias
 # Analise métricas altas (WMC, CBO, LCOM)

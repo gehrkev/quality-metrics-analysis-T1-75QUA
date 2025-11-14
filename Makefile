@@ -1,4 +1,4 @@
-.PHONY: build up down shell logs clean help jupyter test-tools
+.PHONY: build up down shell logs clean help jupyter test-tools notebook clean-results rebuild status analyze analyze-limit list-releases results start stop bash
 
 # Cores para output
 GREEN=\033[0;32m
@@ -74,6 +74,16 @@ list-releases: ## Lista releases de um projeto (uso: make list-releases REPO=own
 results: ## Mostra o diretório de resultados
 	@echo "${GREEN}Abrindo diretório de resultados...${NC}"
 	@ls -la workspace/results/ || echo "Nenhum resultado ainda"
+
+notebook: ## Abre o notebook de análise de métricas
+	@echo "${GREEN}Abrindo notebook de análise...${NC}"
+	@echo "Acesse: http://localhost:8888/notebooks/scripts/analyze_metrics.ipynb"
+	docker-compose up -d jupyter
+
+clean-results: ## Remove apenas os resultados (mantém containers)
+	@echo "${GREEN}Limpando resultados...${NC}"
+	rm -rf workspace/results/*
+	@echo "Resultados removidos. Containers mantidos."
 
 # Atalhos úteis
 start: up ## Alias para 'up'

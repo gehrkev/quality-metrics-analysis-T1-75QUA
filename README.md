@@ -14,11 +14,13 @@ Ambiente Docker automatizado para análise de qualidade de software em projetos 
 
 ## 🚀 Início Rápido
 
+> **Quer começar rápido?** Veja [QUICKSTART.md](QUICKSTART.md) para um guia de 5 minutos.
+
 ### Pré-requisitos
 - Docker e Docker Compose instalados
 - Make (opcional, mas recomendado)
 
-> **Usando Colima?** Veja [colima_notes.md](colima_notes.md) para dicas específicas de configuração e troubleshooting.
+> **Usando Colima?** Veja [COLIMA_NOTES.md](COLIMA_NOTES.md) para dicas específicas de configuração e troubleshooting.
 
 ### 1. Construir e Iniciar
 
@@ -108,7 +110,9 @@ make results                               # Mostra resultados
 
 # Extras
 make jupyter           # Inicia Jupyter Notebook (localhost:8888)
+make notebook          # Abre notebook de análise de métricas
 make test-tools        # Testa se ferramentas estão instaladas
+make clean-results     # Remove apenas resultados (mantém containers)
 ```
 
 ## 🔄 Workflow Automatizado
@@ -148,6 +152,30 @@ Analisando: jsoup-1.12.2 (2020-02-09)
     ✓ SpotBugs report salvo
 ```
 
+## 📊 Análise de Dados
+
+### Notebook de Análise Completo (Recomendado)
+
+Um notebook Jupyter pronto com todas as análises:
+
+```bash
+make notebook
+# Acesse: http://localhost:8888/notebooks/scripts/analyze_metrics.ipynb
+```
+
+**O notebook inclui:**
+- ✅ Métricas CK (WMC, DIT, NOC, CBO, LCOM, RFC, LOC)
+- ✅ Análise PMD (problemas de código por prioridade)
+- ✅ Bugs SpotBugs (gerais, segurança, críticos)
+- ✅ Refatorações (RefactoringMiner)
+- ✅ Análises avançadas:
+  - Top 10 arquivos/classes mais refatorados
+  - Categorização de refatorações
+  - Cruzamento com métricas CK
+  - Estatísticas descritivas
+- ✅ Gráficos prontos (evolução, boxplots, heatmaps)
+- ✅ Exportação automática de CSVs e PNGs
+
 ## 💡 Uso Avançado
 
 ### Acesso ao Container
@@ -181,16 +209,10 @@ spotbugs -textui -effort:max \
   /workspace/projects/jsoup/target/*.jar
 ```
 
-**RefactoringMiner (local, com JSON):**
-```bash
-java -jar /tools/refactoring-miner/RefactoringMiner.jar \
-  -a /workspace/projects/jsoup -json /workspace/results/refactorings.json
-```
-
-**RefactoringMiner (forçando branch via wrapper Java 17):**
+**RefactoringMiner (usa Java 17 automaticamente):**
 ```bash
 /tools/refactoring-miner/refactoring-miner.sh \
-  -b /workspace/projects/jsoup master -json /workspace/results/refactorings.json
+  -a /workspace/projects/jsoup main -json /workspace/results/refactorings.json
 ```
 
 **Ver ferramentas disponíveis:**
@@ -198,14 +220,16 @@ java -jar /tools/refactoring-miner/RefactoringMiner.jar \
 show-tools
 ```
 
-### Python/Jupyter para Análise de Dados
+### Análise Personalizada com Python/Jupyter
+
+Para análises customizadas além do notebook pronto:
 
 ```bash
 make jupyter
 # Acesse http://localhost:8888
 ```
 
-Exemplo de script Python:
+Exemplo de script Python personalizado:
 ```python
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -248,6 +272,11 @@ make logs
 1. Clone o repositório
 2. Execute `make build && make up`
 3. Compartilhe a pasta `workspace/results/` via Git (adicione `workspace/projects/` ao .gitignore)
+
+## 📚 Documentação Adicional
+
+- **[QUICKSTART.md](QUICKSTART.md)** - Guia rápido de 5 minutos com workflow completo
+- **[COLIMA_NOTES.md](COLIMA_NOTES.md)** - Dicas para usar Docker com Colima no macOS
 
 ## 📄 Licença
 
