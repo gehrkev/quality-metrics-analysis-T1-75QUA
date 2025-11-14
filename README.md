@@ -8,7 +8,8 @@ Ambiente Docker automatizado para análise de qualidade de software em projetos 
 - **PMD** (v7.7.0) - Análise estática de código
 - **SpotBugs** (v4.8.6) + **Find Security Bugs** (v1.13.0) - Detecção de bugs e vulnerabilidades
 - **RefactoringMiner** (v3.0.9) - Detecção de refatorações
-- **Java 11** (OpenJDK), **Maven**, **Gradle**, **Git**
+- **Java 11 (Padrão)** (OpenJDK), **Maven**, **Gradle**, **Git**
+- **Java 17** (OpenJDK) - Wrapper usado pelo RefactoringMiner
 - **Python 3** com pyDriller, pandas, matplotlib, seaborn
 - **Jupyter Notebook** (opcional)
 
