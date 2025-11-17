@@ -1,6 +1,7 @@
 # Ambiente Docker - Trabalho de Qualidade de Software (75QUA)
 
-Ambiente Docker automatizado para análise de qualidade de software em projetos Java, desenvolvido para o trabalho da disciplina 75QUA - UDESC Alto Vale.
+Ambiente Docker automatizado para análise de qualidade de software em projetos Java, desenvolvido para o trabalho da disciplina 75QUA - Qualidade de Software - UDESC Alto Vale. \
+Inicialmente utilizado na análise da biblioteca jhy/jsoup, com artigo e resultados disponibilizados no [Zenodo](https://doi.org/10.5281/zenodo.17625604).
 
 ## 📋 Ferramentas Incluídas
 
@@ -271,8 +272,8 @@ make logs
 ## 👥 Colaboração
 
 1. Clone o repositório
-2. Execute `make build && make up`
-3. Compartilhe a pasta `workspace/results/` via Git (adicione `workspace/projects/` ao .gitignore)
+2. Execute o workflow descrito em [QUICKSTART.md](QUICKSTART.md)
+3. Compartilhe a pasta `workspace/results/`
 
 ## 📚 Documentação Adicional
 
@@ -285,6 +286,6 @@ Ambiente criado para fins educacionais - Trabalho da disciplina 75QUA, UDESC Alt
 
 ---
 
-**Desenvolvido para:** Bacharelado em Engenharia de Software - UDESC Alto Vale
-**Disciplina:** 75QUA - Qualidade de Software
+**Desenvolvido para:** Bacharelado em Engenharia de Software - UDESC Alto Vale \
+**Disciplina:** 75QUA - Qualidade de Software \
 **Professor:** Paulo Roberto Farah
