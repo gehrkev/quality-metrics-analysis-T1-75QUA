@@ -5,10 +5,10 @@ Inicialmente utilizado na análise da biblioteca [jhy/jsoup](https://github.com/
 
 ## 📋 Ferramentas Incluídas
 
-- **CK Tool** (v0.7.0) - Métricas CK (WMC, DIT, NOC, CBO, LCOM, RFC, LOC)
-- **PMD** (v7.7.0) - Análise estática de código
-- **SpotBugs** (v4.8.6) + **Find Security Bugs** (v1.13.0) - Detecção de bugs e vulnerabilidades
-- **RefactoringMiner** (v3.0.9) - Detecção de refatorações
+- **[CK](https://github.com/mauricioaniche/ck)** (v0.7.0) - Métricas CK (WMC, DIT, NOC, CBO, LCOM, RFC, LOC)
+- **[PMD](https://github.com/pmd/pmd)** (v7.7.0) - Análise estática de código
+- **[SpotBugs](https://github.com/spotbugs/spotbugs)** (v4.8.6) + **[Find Security Bugs](https://github.com/find-sec-bugs/find-sec-bugs/)** (v1.13.0) - Detecção de bugs e vulnerabilidades
+- **[RefactoringMiner](https://github.com/tsantalis/RefactoringMiner)** (v3.0.9) - Detecção de refatorações
 - **Java 11 (Padrão)** (OpenJDK), **Maven**, **Gradle**, **Git**
 - **Java 17** (OpenJDK) - Wrapper usado pelo RefactoringMiner
 - **Python 3** com pyDriller, pandas, matplotlib, seaborn
