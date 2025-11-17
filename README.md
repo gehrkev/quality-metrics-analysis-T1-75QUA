@@ -1,7 +1,7 @@
 # Ambiente Docker - Trabalho de Qualidade de Software (75QUA)
 
 Ambiente Docker automatizado para análise de qualidade de software em projetos Java, desenvolvido para o trabalho da disciplina 75QUA - Qualidade de Software - UDESC Alto Vale. \
-Inicialmente utilizado na análise da biblioteca jhy/jsoup, com artigo e resultados disponibilizados no [Zenodo](https://doi.org/10.5281/zenodo.17625604).
+Inicialmente utilizado na análise da biblioteca [jhy/jsoup](https://github.com/jhy/jsoup), com artigo e resultados disponibilizados no [Zenodo](https://doi.org/10.5281/zenodo.17625604).
 
 ## 📋 Ferramentas Incluídas
 
